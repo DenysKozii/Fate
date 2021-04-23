@@ -1,6 +1,8 @@
 package com.fate.services.impl;
 
 import com.fate.dto.UserDto;
+import com.fate.dto.user.LoginRequest;
+import com.fate.dto.user.UserProfileDto;
 import com.fate.entity.Question;
 import com.fate.entity.Role;
 import com.fate.entity.User;
@@ -9,6 +11,7 @@ import com.fate.pagination.PageDto;
 import com.fate.pagination.PagesUtility;
 import com.fate.repositories.GameRepository;
 import com.fate.repositories.UserRepository;
+import com.fate.services.AuthorizationService;
 import com.fate.services.UserService;
 import liquibase.pro.packaged.U;
 import lombok.AllArgsConstructor;
@@ -22,6 +25,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -31,8 +35,28 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
 
+    private final AuthorizationService authorizationService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+
+    @Override
+    public UserProfileDto loginUser(LoginRequest request) {
+        String email = request.getUsername();
+        User user = userRepository.findByUsername(email).orElseThrow(() ->
+                new UsernameNotFoundException("Invalid Credentials"));
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new EntityNotFoundException("Invalid Credentials");
+        }
+        authorizationService.authorizeUser(user);
+        return map(user);
+    }
+
+    private UserProfileDto map(User user) {
+        return new UserProfileDto(
+                user.getId(),
+                user.getUsername()
+        );
+    }
 
     public boolean addUser(UserDto userDto) {
         Optional<User> userFromDb = userRepository.findByUsername(userDto.getUsername());
@@ -41,6 +65,7 @@ public class UserServiceImpl implements UserService {
         } else{
             User user = new User();
             user.setRole(Role.USER);
+            user.setUsername(userDto.getUsername());
             user.setPassword(passwordEncoder.encode(userDto.getPassword()));
             userRepository.save(user);
         }

@@ -34,7 +34,6 @@ public class SecurityConfiguration {
     public static class FormLoginAuthentication extends WebSecurityConfigurerAdapter {
         private final ApplicationExceptionHandler exceptionHandler;
         private final AuthorizationService userService;
-        private final DataSource dataSource;
 
         private static final String[] SWAGGER_WHITELIST = {
                 "/v3/api-docs/**",
@@ -54,38 +53,30 @@ public class SecurityConfiguration {
         }
 
 
-        @Bean
-        public PersistentTokenRepository persistentTokenRepository() {
-            JdbcTokenRepositoryImpl tokenRepository = new JdbcTokenRepositoryImpl();
-            tokenRepository.setDataSource(dataSource);
-            return tokenRepository;
-        }
-
         @Override
         protected void configure(HttpSecurity http) throws Exception {
             http
                     .authorizeRequests()
-//                    .antMatchers("/api/user/current", "/api/login", "/api/logout", "/api/testConnection").permitAll()
-                    .antMatchers("/api/**").permitAll()
+                    .antMatchers("/api/login","/api/logout","/api/registration").permitAll()
                     .antMatchers(SWAGGER_WHITELIST).permitAll()
                     .anyRequest().authenticated();
-            http
-                    .formLogin()
-                    .loginPage("/")
-                    .usernameParameter("username")
-                    .loginProcessingUrl("/api/login")
-                    .successHandler((request, response, authentication) -> response.setStatus(HttpServletResponse.SC_OK))
-                    .failureHandler(exceptionHandler)
-                    .permitAll();
+//            http
+//                    .formLogin()
+////                    .loginPage("/")
+//                    .usernameParameter("username")
+//                    .loginProcessingUrl("/api/login")
+//                    .successHandler((request, response, authentication) -> response.setStatus(HttpServletResponse.SC_OK))
+//                    .failureHandler(exceptionHandler)
+//                    .permitAll();
             http
                     .rememberMe()
                     .userDetailsService(userDetailsService())
-                    .tokenRepository(persistentTokenRepository())
                     .rememberMeParameter("rememberMe")
                     .rememberMeCookieName("JSESSION_REMEMBER_ME");
             http
                     .logout()
-                    .logoutUrl("/api/v1/logout")
+                    .logoutUrl("/api/logout")
+                    .deleteCookies("JSESSIONID")
                     .logoutSuccessHandler((httpServletRequest, httpServletResponse, authentication) -> {
                         httpServletResponse.setStatus(HttpServletResponse.SC_OK);
                     })
