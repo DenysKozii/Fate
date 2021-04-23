@@ -24,6 +24,6 @@ public class ParameterDto extends BaseDto {
 
     private Integer lowestValue;
 
-    private GamePatternDto gamePattern;
+    private Long gamePatternId;
 
 }

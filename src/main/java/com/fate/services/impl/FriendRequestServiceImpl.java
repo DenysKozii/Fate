@@ -35,7 +35,7 @@ public class FriendRequestServiceImpl implements FriendRequestService {
     public boolean inviteByUsername(String username, String friendUsername) {
         Optional<FriendRequest> friendRequestOptional = friendRequestRepository.findByInvitorUsernameAndAcceptorUsername(username, friendUsername);
 
-        if (friendRequestOptional.isEmpty()) {
+        if (!friendRequestOptional.isPresent()) {
             FriendRequest friendRequest = new FriendRequest();
             friendRequest.setInvitorUsername(username);
             friendRequest.setAcceptorUsername(friendUsername);
