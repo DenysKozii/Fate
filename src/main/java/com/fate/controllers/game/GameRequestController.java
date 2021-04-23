@@ -1,0 +1,48 @@
+package com.fate.controllers.game;
+
+import com.fate.dto.GameDto;
+import com.fate.dto.GameRequestDto;
+import com.fate.pagination.PageDto;
+import com.fate.services.GameRequestService;
+import lombok.AllArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@AllArgsConstructor
+@RequestMapping("/api/gameRequest")
+public class GameRequestController {
+
+    private final GameRequestService gameRequestService;
+
+    @GetMapping("/list")
+    public PageDto<GameRequestDto> getGameRequestsByUser(@RequestParam(defaultValue = "anonimousUser") String username,
+                                           @RequestParam(defaultValue = "0", required = false) int page,
+                                           @RequestParam(defaultValue = "10", required = false) int pageSize) {
+        return gameRequestService.findAllByUsername(username, page, pageSize);
+    }
+
+    @PostMapping("/new/{gamePatternId}")
+    public GameRequestDto newGameWithFriend(@PathVariable Long gamePatternId,
+                                            @RequestParam(defaultValue = "anonimousUser") String username,
+                                            @RequestParam String friendUsername) {
+        return gameRequestService.createGameRequest(username, friendUsername, gamePatternId);
+    }
+
+    @PostMapping("/accept/{gameRequestId}")
+    public boolean acceptGameRequest(@PathVariable Long gameRequestId) {
+        return gameRequestService.acceptGameRequest(gameRequestId);
+    }
+
+    @PostMapping("/reject/{gameRequestId}")
+    public boolean rejectGameRequest(@PathVariable Long gameRequestId) {
+        return gameRequestService.rejectGameRequest(gameRequestId);
+    }
+
+    @PostMapping("/start/{gameRequestId}")
+    public GameDto startGameByRequest(@PathVariable Long gameRequestId) {
+        return gameRequestService.startGameRequest(gameRequestId);
+    }
+
+
+
+}
