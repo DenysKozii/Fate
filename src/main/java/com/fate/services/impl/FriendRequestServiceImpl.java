@@ -11,6 +11,7 @@ import com.fate.pagination.PageDto;
 import com.fate.pagination.PagesUtility;
 import com.fate.repositories.FriendRequestRepository;
 import com.fate.repositories.UserRepository;
+import com.fate.services.AuthorizationService;
 import com.fate.services.FriendRequestService;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -30,9 +31,12 @@ public class FriendRequestServiceImpl implements FriendRequestService {
 
     private final FriendRequestRepository friendRequestRepository;
     private final UserRepository userRepository;
+    private final AuthorizationService authorizationService;
+
 
     @Override
-    public boolean inviteByUsername(String username, String friendUsername) {
+    public boolean inviteByUsername(String friendUsername) {
+        String username = authorizationService.getProfileOfCurrent().getUsername();
         Optional<FriendRequest> friendRequestOptional = friendRequestRepository.findByInvitorUsernameAndAcceptorUsername(username, friendUsername);
 
         if (!friendRequestOptional.isPresent()) {
@@ -47,7 +51,8 @@ public class FriendRequestServiceImpl implements FriendRequestService {
     }
 
     @Override
-    public boolean acceptByUsername(String username, String friendUsername) {
+    public boolean acceptByUsername(String friendUsername) {
+        String username = authorizationService.getProfileOfCurrent().getUsername();
         FriendRequest friendRequest = friendRequestRepository.findByInvitorUsernameAndAcceptorUsername(username, friendUsername)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Friend request by user username %s and friend username %s doesn't exists!", username, friendUsername)));
         if (!friendRequest.getStatus())
@@ -69,7 +74,8 @@ public class FriendRequestServiceImpl implements FriendRequestService {
 
 
     @Override
-    public boolean deleteByUsername(String username, String friendUsername) {
+    public boolean deleteByUsername(String friendUsername) {
+        String username = authorizationService.getProfileOfCurrent().getUsername();
         FriendRequest friendRequest = friendRequestRepository.findByInvitorUsernameAndAcceptorUsername(username, friendUsername)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Friend request by user username %s and friend username %s doesn't exists!", username, friendUsername)));
         friendRequestRepository.delete(friendRequest);
@@ -87,7 +93,8 @@ public class FriendRequestServiceImpl implements FriendRequestService {
     }
 
     @Override
-    public PageDto<String> acceptList(String username, int page, int pageSize) {
+    public PageDto<String> acceptList(int page, int pageSize) {
+        String username = authorizationService.getProfileOfCurrent().getUsername();
         Page<FriendRequest> result = friendRequestRepository.findAllByAcceptorUsername(username, PagesUtility.createPageableUnsorted(page, pageSize));
         List<String> content = result.getContent().stream()
                 .filter(FriendRequest::getStatus)
@@ -98,7 +105,8 @@ public class FriendRequestServiceImpl implements FriendRequestService {
     }
 
     @Override
-    public PageDto<String> inviteList(String username, int page, int pageSize) {
+    public PageDto<String> inviteList(int page, int pageSize) {
+        String username = authorizationService.getProfileOfCurrent().getUsername();
         Page<FriendRequest> result = friendRequestRepository.findAllByAcceptorUsername(username, PagesUtility.createPageableUnsorted(page, pageSize));
         List<String> content = result.getContent().stream()
                 .filter(FriendRequest::getStatus)

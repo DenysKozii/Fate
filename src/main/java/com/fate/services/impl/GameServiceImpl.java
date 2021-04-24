@@ -11,6 +11,7 @@ import com.fate.pagination.PageDto;
 import com.fate.pagination.PagesUtility;
 import com.fate.repositories.*;
 import com.fate.services.AnswerService;
+import com.fate.services.AuthorizationService;
 import com.fate.services.GameParameterService;
 import com.fate.services.GameService;
 import lombok.AllArgsConstructor;
@@ -38,10 +39,12 @@ public class GameServiceImpl implements GameService {
     private final UserRepository userRepository;
     private final AnswerService answerService;
     private final GameParameterService gameParameterService;
+    private final AuthorizationService authorizationService;
 
 
     @Override
-    public GameDto startNewGame(String username, Long gamePatternId) {
+    public GameDto startNewGame(Long gamePatternId) {
+        String username = authorizationService.getProfileOfCurrent().getUsername();
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User with username " + username + " doesn't exists!"));
 
@@ -122,7 +125,8 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public PageDto<GameDto> savedGames(String username, int page, int pageSize) {
+    public PageDto<GameDto> savedGames(int page, int pageSize) {
+        String username = authorizationService.getProfileOfCurrent().getUsername();
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User with username " + username + " doesn't exists!"));
 

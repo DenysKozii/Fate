@@ -23,6 +23,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class AuthorizationServiceImpl implements AuthorizationService {
+
     private final UserRepository userRepository;
 
     @Override

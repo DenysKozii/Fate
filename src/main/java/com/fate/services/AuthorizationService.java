@@ -10,7 +10,6 @@ public interface AuthorizationService {
 
     void authorizeUser(User user);
 
-
     UserProfileDto getProfileOfCurrent();
 
     UserDetails loadUserByUsername(String username) throws UsernameNotFoundException;

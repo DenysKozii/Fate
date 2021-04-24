@@ -12,6 +12,7 @@ import com.fate.pagination.PageDto;
 import com.fate.pagination.PagesUtility;
 import com.fate.repositories.GameRequestRepository;
 import com.fate.repositories.UserRepository;
+import com.fate.services.AuthorizationService;
 import com.fate.services.GameRequestService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,9 +30,11 @@ public class GameRequestServiceImpl implements GameRequestService {
 
     private final GameRequestRepository gameRequestRepository;
     private final UserRepository userRepository;
+    private final AuthorizationService authorizationService;
 
     @Override
-    public GameRequestDto createGameRequest(String username, String friendUsername, Long gamePatternId) {
+    public GameRequestDto createGameRequest( String friendUsername, Long gamePatternId) {
+        String username = authorizationService.getProfileOfCurrent().getUsername();
         GameRequest gameRequest = new GameRequest();
         gameRequest.setInvitorUsername(username);
         gameRequest.setAcceptorUsername(friendUsername);
@@ -72,7 +75,8 @@ public class GameRequestServiceImpl implements GameRequestService {
     }
 
     @Override
-    public PageDto<GameRequestDto> findAllByUsername(String username, int page, int pageSize) {
+    public PageDto<GameRequestDto> findAllByUsername(int page, int pageSize) {
+        String username = authorizationService.getProfileOfCurrent().getUsername();
         Page<GameRequest> result = gameRequestRepository.findAllByAcceptorUsername(username, PagesUtility.createPageableUnsorted(page, pageSize));
         return PageDto.of(result.getTotalElements(), page, mapToDto(result.getContent()));
     }

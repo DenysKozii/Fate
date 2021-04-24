@@ -50,6 +50,6 @@ public class GamePattern extends BaseEntity {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @OneToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL, mappedBy = "gamePattern")
-    private List<Parameter> parameters;
+    private List<Parameter> parameters = new ArrayList<>();
 
 }

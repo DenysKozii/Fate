@@ -3,6 +3,7 @@ package com.fate.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -24,7 +25,7 @@ public class Parameter extends BaseEntity {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "parameter")
-    private List<GameParameter> gameParameters;
+    private List<GameParameter> gameParameters = new ArrayList<>();
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude

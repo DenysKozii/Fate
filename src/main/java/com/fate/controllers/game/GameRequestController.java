@@ -15,17 +15,15 @@ public class GameRequestController {
     private final GameRequestService gameRequestService;
 
     @GetMapping("/list")
-    public PageDto<GameRequestDto> getGameRequestsByUser(@RequestParam(defaultValue = "anonimousUser") String username,
-                                           @RequestParam(defaultValue = "0", required = false) int page,
-                                           @RequestParam(defaultValue = "10", required = false) int pageSize) {
-        return gameRequestService.findAllByUsername(username, page, pageSize);
+    public PageDto<GameRequestDto> getGameRequestsByUser(@RequestParam(defaultValue = "0", required = false) int page,
+                                                         @RequestParam(defaultValue = "10", required = false) int pageSize) {
+        return gameRequestService.findAllByUsername(page, pageSize);
     }
 
     @PostMapping("/new/{gamePatternId}")
     public GameRequestDto newGameWithFriend(@PathVariable Long gamePatternId,
-                                            @RequestParam(defaultValue = "anonimousUser") String username,
                                             @RequestParam String friendUsername) {
-        return gameRequestService.createGameRequest(username, friendUsername, gamePatternId);
+        return gameRequestService.createGameRequest(friendUsername, gamePatternId);
     }
 
     @PostMapping("/accept/{gameRequestId}")

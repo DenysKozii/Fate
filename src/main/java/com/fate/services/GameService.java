@@ -9,12 +9,12 @@ public interface GameService {
 
     GameDto saveGame(Long gameId);
 
-    PageDto<GameDto> savedGames(String username, int page, int pageSize);
+    PageDto<GameDto> savedGames(int page, int pageSize);
 
     GameDto loadGame(Long gameId);
 
     QuestionDto nextQuestion(GameDto game);
 
-    GameDto startNewGame(String username, Long gamePatternId);
+    GameDto startNewGame(Long gamePatternId);
 
 }

@@ -17,9 +17,8 @@ public class GameController {
     private final GameService gameService;
 
     @GetMapping("/new/{gamePatternId}")
-    public GameDto newGame(@PathVariable Long gamePatternId,
-                           @RequestParam(defaultValue = "anonimousUser") String username) {
-        return gameService.startNewGame(username, gamePatternId);
+    public GameDto newGame(@PathVariable Long gamePatternId) {
+        return gameService.startNewGame(gamePatternId);
     }
 
     @PostMapping("/answer/{gameId}/{answerId}")
@@ -34,10 +33,9 @@ public class GameController {
     }
 
     @GetMapping("/saved")
-    public PageDto<GameDto> savedGames(@RequestParam(defaultValue = "anonimousUser") String username,
-                                       @RequestParam(defaultValue = "0", required = false) int page,
+    public PageDto<GameDto> savedGames(@RequestParam(defaultValue = "0", required = false) int page,
                                        @RequestParam(defaultValue = "10", required = false) int pageSize) {
-        return gameService.savedGames(username, page, pageSize);
+        return gameService.savedGames(page, pageSize);
     }
 
     @GetMapping("/load/{gameId}")

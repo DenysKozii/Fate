@@ -15,16 +15,14 @@ public class GamePatternController {
 
     @PostMapping("/new")
     public GamePatternDto newGamePattern(@RequestParam(defaultValue = "Test") String title,
-                                         @RequestParam(defaultValue = "1") Integer usersAmount,
-                                         @RequestParam(defaultValue = "anonimousUser") String username) {
-        return gamePatternService.createGamePattern(title, usersAmount, username);
+                                         @RequestParam(defaultValue = "1") Integer usersAmount) {
+        return gamePatternService.createGamePattern(title, usersAmount);
     }
 
     @GetMapping("/list")
-    public PageDto<GamePatternDto> getGamePatternsListByUser(@RequestParam(defaultValue = "anonimousUser") String username,
-                                                          @RequestParam(defaultValue = "0", required = false) int page,
-                                                          @RequestParam(defaultValue = "10", required = false) int pageSize) {
-        return gamePatternService.getGamePatternsByUser(username, page, pageSize);
+    public PageDto<GamePatternDto> getGamePatternsListByUser(@RequestParam(defaultValue = "0", required = false) int page,
+                                                             @RequestParam(defaultValue = "10", required = false) int pageSize) {
+        return gamePatternService.getGamePatterns(page, pageSize);
     }
 
     @DeleteMapping("{gamePatternId}")

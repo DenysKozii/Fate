@@ -14,6 +14,6 @@ public interface UserService {
 
     boolean addUser(UserDto user);
 
-    PageDto<String> getFriendsByUsername(String username, int page, int pageSize);
+    PageDto<String> getFriendsByUsername(int page, int pageSize);
 
 }

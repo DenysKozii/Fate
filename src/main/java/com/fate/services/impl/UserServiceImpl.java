@@ -65,7 +65,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public PageDto<String> getFriendsByUsername(String username, int page, int pageSize) {
+    public PageDto<String> getFriendsByUsername(int page, int pageSize) {
+        String username = authorizationService.getProfileOfCurrent().getUsername();
         Page<User> result = userRepository.findFriendsByUsername(username, PagesUtility.createPageableUnsorted(page, pageSize));
         return PageDto.of(result.getTotalElements(), page, mapToDto(result.getContent()));
     }

@@ -68,7 +68,6 @@ public class QuestionServiceImpl implements QuestionService {
             questionParameterRepository.save(questionParameter);
             question.getQuestionParameters().add(questionParameter);
         }
-//        questionRepository.save(question);
         return question;
     }
 

@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 
 public interface GamePatternService {
-    GamePatternDto createGamePattern(String title, Integer usersAmount, String username);
+    GamePatternDto createGamePattern(String title, Integer usersAmount);
 
-    PageDto<GamePatternDto> getGamePatternsByUser(String username, int page, int pageSize);
+    PageDto<GamePatternDto> getGamePatterns(int page, int pageSize);
 
     boolean deleteById(Long gamePatternId);
 }

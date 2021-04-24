@@ -43,7 +43,7 @@ public class Game extends BaseEntity{
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "game")
-    private List<GameParameter> parameters;
+    private List<GameParameter> parameters = new ArrayList<>();
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude

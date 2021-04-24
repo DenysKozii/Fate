@@ -6,9 +6,9 @@ import com.fate.pagination.PageDto;
 
 public interface GameRequestService {
 
-    PageDto<GameRequestDto> findAllByUsername(String username, int page, int pageSize);
+    PageDto<GameRequestDto> findAllByUsername(int page, int pageSize);
 
-    GameRequestDto createGameRequest(String username, String friendEmail, Long gamePatternId);
+    GameRequestDto createGameRequest(String friendEmail, Long gamePatternId);
 
     boolean acceptGameRequest(Long gameRequestId);
 

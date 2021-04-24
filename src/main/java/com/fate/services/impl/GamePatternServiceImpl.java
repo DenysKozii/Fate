@@ -10,6 +10,7 @@ import com.fate.pagination.PagesUtility;
 import com.fate.repositories.GamePatternRepository;
 import com.fate.repositories.QuestionRepository;
 import com.fate.repositories.UserRepository;
+import com.fate.services.AuthorizationService;
 import com.fate.services.GamePatternService;
 import com.fate.services.QuestionService;
 import lombok.AllArgsConstructor;
@@ -32,9 +33,12 @@ public class GamePatternServiceImpl implements GamePatternService {
     private final QuestionService questionService;
     private final QuestionRepository questionRepository;
     private final UserRepository userRepository;
+    private final AuthorizationService authorizationService;
+
 
     @Override
-    public GamePatternDto createGamePattern(String title, Integer usersAmount, String username) {
+    public GamePatternDto createGamePattern(String title, Integer usersAmount) {
+        String username = authorizationService.getProfileOfCurrent().getUsername();
         if (gamePatternRepository.findByTitle(title).isPresent())
             return GamePatternMapper.INSTANCE.mapToDto(gamePatternRepository.findByTitle(title).get());
 
@@ -51,7 +55,8 @@ public class GamePatternServiceImpl implements GamePatternService {
     }
 
     @Override
-    public PageDto<GamePatternDto> getGamePatternsByUser(String username, int page, int pageSize) {
+    public PageDto<GamePatternDto> getGamePatterns(int page, int pageSize) {
+        String username = authorizationService.getProfileOfCurrent().getUsername();
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User with username " + username + " doesn't exists!"));
         Page<GamePattern> result = gamePatternRepository.findByUsers(user, PagesUtility.createPageableUnsorted(page, pageSize));

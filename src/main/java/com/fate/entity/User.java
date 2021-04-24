@@ -9,10 +9,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @NoArgsConstructor
@@ -49,12 +46,12 @@ public class User extends BaseEntity implements UserDetails{
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
-    private Set<Game> games;
+    private Set<Game> games = new HashSet<>();
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @ManyToMany(mappedBy = "users", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<GamePattern> gamePatterns;
+    private Set<GamePattern> gamePatterns = new HashSet<>();
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
@@ -62,7 +59,7 @@ public class User extends BaseEntity implements UserDetails{
     @JoinTable(name = "user_friend",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "friend_id", referencedColumnName="id"))
-    private List<User> friends;
+    private List<User> friends = new ArrayList<>();
 
 
     @ToString.Exclude
@@ -71,7 +68,7 @@ public class User extends BaseEntity implements UserDetails{
     @JoinTable(name = "invite_friend",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "friend_id", referencedColumnName="id"))
-    private List<FriendRequest> invite;
+    private List<FriendRequest> invite = new ArrayList<>();
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
@@ -79,7 +76,7 @@ public class User extends BaseEntity implements UserDetails{
     @JoinTable(name = "accept_friend",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "friend_id", referencedColumnName="id"))
-    private List<FriendRequest> accept;
+    private List<FriendRequest> accept = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

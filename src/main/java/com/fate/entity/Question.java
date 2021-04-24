@@ -30,13 +30,13 @@ public class Question extends BaseEntity{
     @JoinTable(name = "question_conditions",
             joinColumns = @JoinColumn(name = "question_id"),
             inverseJoinColumns = @JoinColumn(name = "condition_id", referencedColumnName = "id"))
-    private List<Question> questionConditions;
+    private List<Question> questionConditions = new ArrayList<>();
 
     @Transient
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "question")
-    private List<Answer> answers;
+    private List<Answer> answers = new ArrayList<>();
 
 
     @ToString.Exclude
@@ -62,7 +62,7 @@ public class Question extends BaseEntity{
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "question")
-    private List<QuestionParameter> questionParameters;
+    private List<QuestionParameter> questionParameters = new ArrayList<>();
 
     private Integer weight;
 

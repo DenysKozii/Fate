@@ -5,14 +5,14 @@ import com.fate.pagination.PageDto;
 import java.util.List;
 
 public interface FriendRequestService {
-    boolean inviteByUsername(String username, String friendUsername);
+    boolean inviteByUsername(String friendUsername);
 
-    boolean acceptByUsername(String username, String friendUsername);
+    boolean acceptByUsername(String friendUsername);
 
-    boolean deleteByUsername(String username, String friendUsername);
+    boolean deleteByUsername(String friendUsername);
 
-    PageDto<String> acceptList(String username, int page, int pageSize);
+    PageDto<String> acceptList(int page, int pageSize);
 
-    PageDto<String> inviteList(String username, int page, int pageSize);
+    PageDto<String> inviteList(int page, int pageSize);
 
 }

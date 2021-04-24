@@ -3,6 +3,7 @@ package com.fate.controllers;
 import com.fate.entity.Role;
 import com.fate.entity.User;
 import com.fate.repositories.UserRepository;
+import com.fate.services.AuthorizationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,10 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class TestConnectionController {
 
     private final UserRepository userRepository;
+    private final AuthorizationService authorizationService;
 
     @GetMapping("/testConnection")
     public String testConnection() {
-        return "connected";
+        return authorizationService.getProfileOfCurrent().getUsername();
     }
 
     @GetMapping("/testRegister")
