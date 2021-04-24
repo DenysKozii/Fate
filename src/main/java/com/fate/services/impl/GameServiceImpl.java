@@ -68,7 +68,7 @@ public class GameServiceImpl implements GameService {
         gameDto.setGameStatus(game.getGameStatus());
         gameDto.setGamePatternId(game.getGamePattern().getId());
 
-        QuestionDto question = nextQuestion(gameDto);
+        QuestionDto question = nextQuestion(game);
         gameDto.setQuestion(question);
 
         if(question != null) {
@@ -145,13 +145,13 @@ public class GameServiceImpl implements GameService {
     public GameDto loadGame(Long gameId) {
         Game game = gameRepository.findById(gameId)
                 .orElseThrow(() -> new EntityNotFoundException("Game with id " + gameId + " not found"));
+        game.setGameStatus(GameStatus.RUNNING);
+        gameRepository.save(game);
         return GameMapper.INSTANCE.mapToDto(game);
     }
 
     @Override
-    public QuestionDto nextQuestion(GameDto gameDto) {
-        Game game = gameRepository.findById(gameDto.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Game with id " + gameDto.getId() + " not found"));
+    public QuestionDto nextQuestion(Game game) {
         List<Question> questions = changeQuestions(game);
         game.setQuestionsPull(questions);
         gameRepository.save(game);

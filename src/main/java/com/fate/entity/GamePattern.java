@@ -40,7 +40,7 @@ public class GamePattern extends BaseEntity {
     @Transient
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @OneToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL, mappedBy = "gamePattern")
+    @OneToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL, mappedBy = "gamePattern")
     private List<Question> questions = new ArrayList<>();
 
     @Transient

@@ -3,6 +3,7 @@ package com.fate.services;
 
 import com.fate.dto.GameDto;
 import com.fate.dto.QuestionDto;
+import com.fate.entity.Game;
 import com.fate.pagination.PageDto;
 
 public interface GameService {
@@ -13,7 +14,7 @@ public interface GameService {
 
     GameDto loadGame(Long gameId);
 
-    QuestionDto nextQuestion(GameDto game);
+    QuestionDto nextQuestion(Game game);
 
     GameDto startNewGame(Long gamePatternId);
 

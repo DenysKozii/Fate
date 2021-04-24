@@ -41,15 +41,9 @@ public class Question extends BaseEntity{
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @ManyToOne(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
-    @JoinColumn(name="questions")
+    @ManyToOne(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
+    @JoinColumn(name="game_pattern")
     private GamePattern gamePattern;
-
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
-    @ManyToOne(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
-    @JoinColumn(name="questionsPull")
-    private Game game;
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude

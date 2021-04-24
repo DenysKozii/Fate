@@ -132,6 +132,7 @@ public class AnswerServiceImpl implements AnswerService {
         if(gameParameterRepository.findAllByGame(game).stream()
                 .anyMatch(o -> o.getValue() <= o.getParameter().getLowestValue())){
             game.setGameStatus(GameStatus.GAME_OVER);
+            gameRepository.save(game);
         }
         return GameMapper.INSTANCE.mapToDto(game);
     }

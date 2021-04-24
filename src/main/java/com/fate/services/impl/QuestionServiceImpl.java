@@ -54,9 +54,7 @@ public class QuestionServiceImpl implements QuestionService {
                 .collect(Collectors.toList());
     }
 
-    private Question createNewQuestionParameters(Long gamePatternId) {
-        GamePattern gamePattern = gamePatternRepository.findById(gamePatternId)
-                .orElseThrow(() -> new EntityNotFoundException("GamePattern with id " + gamePatternId + " not found"));
+    private Question createNewQuestionParameters(GamePattern gamePattern) {
         Question question = new Question();
         question.setGamePattern(gamePattern);
         for (Parameter parameter : gamePattern.getParameters()) {
@@ -73,7 +71,9 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public QuestionDto createNewQuestion(Long gamePatternId, String title, String context, Integer weight, MultipartFile multipartFile) throws IOException {
-        Question question = createNewQuestionParameters(gamePatternId);
+        GamePattern gamePattern = gamePatternRepository.findById(gamePatternId)
+                .orElseThrow(() -> new EntityNotFoundException("GamePattern with id " + gamePatternId + " not found"));
+        Question question = createNewQuestionParameters(gamePattern);
         question.setTitle(title);
         question.setContext(context);
         question.setWeight(weight);
