@@ -13,6 +13,4 @@ public class LoginRequest {
 
     @NotNull(message = "Password is required.")
     private String password;
-
-    private boolean rememberMe = false;
 }

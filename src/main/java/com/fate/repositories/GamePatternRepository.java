@@ -12,7 +12,9 @@ import java.util.Optional;
 
 public interface GamePatternRepository extends JpaRepository<GamePattern, Long>, PagingAndSortingRepository<GamePattern, Long> {
 
-    Page<GamePattern> findByUsers(User user, Pageable pageable);
+    List<GamePattern> findByUsers(User user);
+
+    Page<GamePattern> findAll(Pageable pageable);
 
     Optional<GamePattern> findById(Long id);
 

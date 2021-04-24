@@ -20,7 +20,7 @@ public class QuestionParameterController {
 
     private final QuestionParameterService questionParameterService;
 
-    @PostMapping("/update/{parameterId}")
+    @PatchMapping("/update/{parameterId}")
     public boolean update(@PathVariable Long parameterId,
                           @RequestParam Integer appear,
                           @RequestParam Integer disappear) {

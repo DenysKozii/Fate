@@ -11,8 +11,4 @@ public class UserProfileDto {
     private Long id;
 
     private String username;
-
-    public UserProfileDto(Long id) {
-        this.id = id;
-    }
 }

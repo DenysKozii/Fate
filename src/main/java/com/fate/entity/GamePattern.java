@@ -19,6 +19,8 @@ import java.util.Set;
 @Table(name = "game_patterns")
 public class GamePattern extends BaseEntity {
 
+    private Long orderId;
+
     @NotNull
     private String title;
 

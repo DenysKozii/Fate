@@ -16,10 +16,14 @@ import lombok.NoArgsConstructor;
 @JsonNaming(value = PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class GamePatternDto extends BaseDto {
 
+    private Long orderId;
+    
     private String title;
 
     private Integer usersAmount;
 
     private Integer rate;
+
+    private Boolean available = false;
 
 }

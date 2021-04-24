@@ -20,6 +20,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,7 +38,7 @@ public class GamePatternServiceImpl implements GamePatternService {
 
 
     @Override
-    public GamePatternDto createGamePattern(String title, Integer usersAmount) {
+    public GamePatternDto createGamePattern(Long orderId, String title, Integer usersAmount) {
         String username = authorizationService.getProfileOfCurrent().getUsername();
         if (gamePatternRepository.findByTitle(title).isPresent())
             return GamePatternMapper.INSTANCE.mapToDto(gamePatternRepository.findByTitle(title).get());
@@ -46,6 +47,11 @@ public class GamePatternServiceImpl implements GamePatternService {
                 .orElseThrow(() -> new UsernameNotFoundException("User with username " + username + " doesn't exists!"));
 
         GamePattern gamePattern = new GamePattern();
+        if (orderId != null){
+            gamePattern.setOrderId(orderId);
+        } else {
+            gamePattern.setOrderId((long) gamePatternRepository.findAll().size());
+        }
         gamePattern.setTitle(title);
         gamePattern.setUsersAmount(usersAmount);
         gamePattern.getUsers().add(user);
@@ -59,8 +65,20 @@ public class GamePatternServiceImpl implements GamePatternService {
         String username = authorizationService.getProfileOfCurrent().getUsername();
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User with username " + username + " doesn't exists!"));
-        Page<GamePattern> result = gamePatternRepository.findByUsers(user, PagesUtility.createPageableUnsorted(page, pageSize));
-        return PageDto.of(result.getTotalElements(), page, mapGamePattern(result.getContent()));
+
+        List<GamePattern> available = gamePatternRepository.findByUsers(user);
+        Page<GamePattern> result = gamePatternRepository.findAll(PagesUtility.createPageableUnsorted(page, pageSize));
+
+        List<GamePatternDto> gamePatternDtos = mapGamePattern(result.getContent());
+        List<String> availableTitles = mapGamePattern(available).stream()
+                .map(GamePatternDto::getTitle)
+                .collect(Collectors.toList());;
+
+        gamePatternDtos.stream()
+                .filter(gp->availableTitles.contains(gp.getTitle()))
+                .forEach(o->o.setAvailable(true));
+        gamePatternDtos.sort(Comparator.comparingLong(GamePatternDto::getOrderId));
+        return PageDto.of(result.getTotalElements(), page, gamePatternDtos);
     }
 
     private List<GamePatternDto> mapGamePattern(List<GamePattern> source) {
@@ -75,10 +93,20 @@ public class GamePatternServiceImpl implements GamePatternService {
                 .orElseThrow(() -> new EntityNotFoundException("GamePattern with id " + gamePatternId + " not found"));
 
         questionRepository.findAllByGamePatternId(gamePatternId).forEach(o -> questionService.deleteById(o.getId()));
-        userRepository.findAllByGamePatterns(gamePattern)
-                .forEach(o -> o.getGamePatterns().remove(gamePattern));
         gamePattern.setUsers(new HashSet<>());
         gamePatternRepository.delete(gamePattern);
+        return true;
+    }
+
+    @Override
+    public boolean updateAvailable(Long gamePatternId) {
+        String username = authorizationService.getProfileOfCurrent().getUsername();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User with username " + username + " doesn't exists!"));
+        GamePattern gamePattern = gamePatternRepository.findById(gamePatternId)
+                .orElseThrow(() -> new EntityNotFoundException("GamePattern with id " + gamePatternId + " not found"));
+        gamePattern.getUsers().add(user);
+        gamePatternRepository.save(gamePattern);
         return true;
     }
 }

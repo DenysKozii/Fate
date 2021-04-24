@@ -14,9 +14,10 @@ public class GamePatternController {
     private final GamePatternService gamePatternService;
 
     @PostMapping("/new")
-    public GamePatternDto newGamePattern(@RequestParam(defaultValue = "Test") String title,
+    public GamePatternDto newGamePattern(@RequestParam Long orderId,
+                                         @RequestParam(defaultValue = "Test") String title,
                                          @RequestParam(defaultValue = "1") Integer usersAmount) {
-        return gamePatternService.createGamePattern(title, usersAmount);
+        return gamePatternService.createGamePattern(orderId, title, usersAmount);
     }
 
     @GetMapping("/list")
@@ -28,6 +29,11 @@ public class GamePatternController {
     @DeleteMapping("{gamePatternId}")
     public boolean deleteGamePattern(@PathVariable Long gamePatternId) {
         return gamePatternService.deleteById(gamePatternId);
+    }
+
+    @PatchMapping("/available/{gamePatternId}")
+    public boolean updateAvailable(@PathVariable Long gamePatternId) {
+        return gamePatternService.updateAvailable(gamePatternId);
     }
 
 }

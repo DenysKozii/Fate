@@ -15,7 +15,7 @@ public class AnswerParameterController {
 
     private final AnswerParameterService answerParameterService;
 
-    @PostMapping("/update/{parameterId}")
+    @PatchMapping("/update/{parameterId}")
     public boolean update(@PathVariable Long parameterId,
                           @RequestParam Integer influence) {
         return answerParameterService.update(parameterId, influence);
