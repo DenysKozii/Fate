@@ -44,7 +44,8 @@ public class AuthorizationServiceImpl implements AuthorizationService {
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
         return new UserProfileDto(
                 user.getId(),
-                user.getUsername()
+                user.getUsername(),
+                user.getGamePatterns().size()
         );
     }
 
