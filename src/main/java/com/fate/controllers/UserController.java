@@ -33,17 +33,12 @@ public class UserController {
         return userService.addUser(user);
     }
 
-    @GetMapping("current")
-    public UserProfileDto getCurrent() {
-        return authService.getProfileOfCurrent();
-    }
-
     @PostMapping("/login")
     public UserProfileDto login(@RequestBody @Valid LoginRequest request) {
         return userService.loginUser(request);
     }
 
-    @PostMapping("/profile")
+    @GetMapping("/profile")
     public UserProfileDto profile() {
         return authService.getProfileOfCurrent();
     }

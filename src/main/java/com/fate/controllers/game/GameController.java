@@ -16,7 +16,7 @@ public class GameController {
     private final AnswerService answerService;
     private final GameService gameService;
 
-    @GetMapping("/new/{gamePatternId}")
+    @PostMapping("/new/{gamePatternId}")
     public GameDto newGame(@PathVariable Long gamePatternId) {
         return gameService.startNewGame(gamePatternId);
     }

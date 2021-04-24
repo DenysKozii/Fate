@@ -21,7 +21,7 @@ public class AnswerParameterController {
         return answerParameterService.update(parameterId, influence);
     }
 
-    @PostMapping("/list/{answerId}")
+    @GetMapping("/list/{answerId}")
     public PageDto<AnswerParameterDto> answerParametersList(@PathVariable Long answerId,
                                                             @RequestParam(defaultValue = "0", required = false) int page,
                                                             @RequestParam(defaultValue = "10", required = false) int pageSize) {
