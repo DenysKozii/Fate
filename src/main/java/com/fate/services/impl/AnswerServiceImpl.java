@@ -33,23 +33,6 @@ public class AnswerServiceImpl implements AnswerService {
     private final AnswerParameterRepository answerParameterRepository;
 
     @Override
-    public GameDto answerInfluence(Long answerId, Long gameId) {
-        Game game = gameRepository.findById(gameId)
-                .orElseThrow(() -> new EntityNotFoundException("Game with id " + gameId + " not found"));
-        Answer answer = answerRepository.findById(answerId)
-                .orElseThrow(() -> new EntityNotFoundException("Answer with id " + answerId + " not found"));
-
-        gameParameterRepository.findAllByGame(game)
-                .forEach(o->o.setValue(Integer.min(o.getParameter().getHighestValue(),
-                        o.getValue()+answerParameterRepository
-                        .findByTitleAndAnswer(o.getParameter().getTitle(), answer)
-                        .orElseThrow(() -> new EntityNotFoundException("AnswerParameter with title " + o.getParameter().getTitle() + " not found"))
-                        .getValue())));
-        gameRepository.save(game);
-        return gameOverConditionCheck(game);
-    }
-
-    @Override
     public List<AnswerDto> getAnswersByQuestionId(Long questionId) {
         List<Answer> answers = answerRepository.findAllByQuestionId(questionId);
         return answers.stream()
@@ -91,31 +74,32 @@ public class AnswerServiceImpl implements AnswerService {
 
     @Override
     public GameDto answerInfluence(Long answerId, GameDto gameDto, GameDto gameDtoSecond) {
-        Answer answer = answerRepository.findById(answerId)
-                .orElseThrow(() -> new EntityNotFoundException("Answer with id " + answerId + " not found"));
-        Game game = gameRepository.findById(gameDto.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Game with id " + gameDto.getId() + " not found"));
-        List<GameParameter> gameParameters = gameParameterRepository.findAllByGame(game);
-        gameParameters
-                .forEach(o->o.setValue(Integer.min(o.getParameter().getHighestValue(),
-                        o.getValue()+answerParameterRepository
-                                .findByTitleAndAnswer(o.getParameter().getTitle(), answer)
-                                .orElseThrow(() -> new EntityNotFoundException("AnswerParameter with title " + o.getParameter().getTitle() + " not found"))
-                                .getValue())));
-        gameRepository.save(game);
-        game = gameRepository.findById(gameDtoSecond.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Game with id " + gameDtoSecond.getId() + " not found"));
-
-        gameParameters = gameParameterRepository.findAllByGame(game);
-        gameParameters
-                .forEach(o->o.setValue(Integer.min(o.getParameter().getHighestValue(),
-                        o.getValue()+answerParameterRepository
-                                .findByTitleAndAnswer(o.getParameter().getTitle(), answer)
-                                .orElseThrow(() -> new EntityNotFoundException("AnswerParameter with title " + o.getParameter().getTitle() + " not found"))
-                                .getValue())));
-        gameRepository.save(game);
-
-        return gameOverConditionCheck(game);
+//        Answer answer = answerRepository.findById(answerId)
+//                .orElseThrow(() -> new EntityNotFoundException("Answer with id " + answerId + " not found"));
+//        Game game = gameRepository.findById(gameDto.getId())
+//                .orElseThrow(() -> new EntityNotFoundException("Game with id " + gameDto.getId() + " not found"));
+//        List<GameParameter> gameParameters = gameParameterRepository.findAllByGame(game);
+//        gameParameters
+//                .forEach(o->o.setValue(Integer.min(o.getParameter().getHighestValue(),
+//                        o.getValue()+answerParameterRepository
+//                                .findByTitleAndAnswer(o.getParameter().getTitle(), answer)
+//                                .orElseThrow(() -> new EntityNotFoundException("AnswerParameter with title " + o.getParameter().getTitle() + " not found"))
+//                                .getValue())));
+//        gameRepository.save(game);
+//        game = gameRepository.findById(gameDtoSecond.getId())
+//                .orElseThrow(() -> new EntityNotFoundException("Game with id " + gameDtoSecond.getId() + " not found"));
+//
+//        gameParameters = gameParameterRepository.findAllByGame(game);
+//        gameParameters
+//                .forEach(o->o.setValue(Integer.min(o.getParameter().getHighestValue(),
+//                        o.getValue()+answerParameterRepository
+//                                .findByTitleAndAnswer(o.getParameter().getTitle(), answer)
+//                                .orElseThrow(() -> new EntityNotFoundException("AnswerParameter with title " + o.getParameter().getTitle() + " not found"))
+//                                .getValue())));
+//        gameRepository.save(game);
+//
+//        return gameOverConditionCheck(game);
+        return null;
     }
 
 
@@ -125,16 +109,6 @@ public class AnswerServiceImpl implements AnswerService {
                 .orElseThrow(() -> new EntityNotFoundException("Answer with id " + answerId + " not found"));
         answerRepository.delete(answer);
         return true;
-    }
-
-
-    private GameDto gameOverConditionCheck(Game game){
-        if(gameParameterRepository.findAllByGame(game).stream()
-                .anyMatch(o -> o.getValue() <= o.getParameter().getLowestValue())){
-            game.setGameStatus(GameStatus.GAME_OVER);
-            gameRepository.save(game);
-        }
-        return GameMapper.INSTANCE.mapToDto(game);
     }
 
 }

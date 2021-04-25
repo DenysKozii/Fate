@@ -24,7 +24,7 @@ public class GameController {
     @PostMapping("/answer/{gameId}/{answerId}")
     public GameDto checkAnswer(@PathVariable Long gameId,
                                @PathVariable Long answerId) {
-        return answerService.answerInfluence(answerId, gameId);
+        return gameService.answerInfluence(answerId, gameId);
     }
 
     @PostMapping("/save/{gameId}")

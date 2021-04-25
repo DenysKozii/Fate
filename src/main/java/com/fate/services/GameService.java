@@ -18,4 +18,6 @@ public interface GameService {
 
     GameDto startNewGame(Long gamePatternId);
 
+    GameDto answerInfluence(Long answerId, Long gameId);
+
 }

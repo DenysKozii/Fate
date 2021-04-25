@@ -10,8 +10,6 @@ import java.util.List;
 
 public interface AnswerService {
 
-    GameDto answerInfluence(Long answerId, Long gameId);
-
     List<AnswerDto> getAnswersByQuestionId(Long questionId);
 
     PageDto<AnswerDto> getAnswersByQuestionId(Long questionId, int page, int pageSize);

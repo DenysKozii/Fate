@@ -39,6 +39,8 @@ public class GameServiceImpl implements GameService {
     private final UserRepository userRepository;
     private final AnswerService answerService;
     private final GameParameterService gameParameterService;
+    private final AnswerRepository answerRepository;
+    private final AnswerParameterRepository answerParameterRepository;
     private final AuthorizationService authorizationService;
 
 
@@ -55,9 +57,9 @@ public class GameServiceImpl implements GameService {
         game.setGameStatus(GameStatus.RUNNING);
         game.setGamePattern(gamePattern);
         createParameters(game, gamePattern);
+        game.setUser(user);
         gameRepository.save(game);
         game.setQuestionsPull(changeQuestions(game));
-        game.setUser(user);
         gameRepository.save(game);
 
         return mapToDto(game);
@@ -174,5 +176,34 @@ public class GameServiceImpl implements GameService {
                 return question;
         }
         return questions.get(0);
+    }
+
+    @Override
+    public GameDto answerInfluence(Long answerId, Long gameId) {
+        Game game = gameRepository.findById(gameId)
+                .orElseThrow(() -> new EntityNotFoundException("Game with id " + gameId + " not found"));
+        Answer answer = answerRepository.findById(answerId)
+                .orElseThrow(() -> new EntityNotFoundException("Answer with id " + answerId + " not found"));
+
+        gameParameterRepository.findAllByGame(game)
+                .forEach(o->o.setValue(Integer.min(o.getParameter().getHighestValue(),
+                        o.getValue()+answerParameterRepository
+                                .findByTitleAndAnswer(o.getParameter().getTitle(), answer)
+                                .orElseThrow(() -> new EntityNotFoundException("AnswerParameter with title " + o.getParameter().getTitle() + " not found"))
+                                .getValue())));
+        gameRepository.save(game);
+        game.setQuestionsPull(changeQuestions(game));
+        gameRepository.save(game);
+
+        return gameOverConditionCheck(game);
+    }
+
+    private GameDto gameOverConditionCheck(Game game){
+        if(gameParameterRepository.findAllByGame(game).stream()
+                .anyMatch(o -> o.getValue() <= o.getParameter().getLowestValue())){
+            game.setGameStatus(GameStatus.GAME_OVER);
+            gameRepository.save(game);
+        }
+        return mapToDto(game);
     }
 }
