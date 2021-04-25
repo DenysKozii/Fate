@@ -24,11 +24,6 @@ public class Parameter extends BaseEntity {
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "parameter")
-    private List<GameParameter> gameParameters = new ArrayList<>();
-
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_game_pattern")
     private GamePattern gamePattern;

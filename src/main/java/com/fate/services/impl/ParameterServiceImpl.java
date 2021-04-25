@@ -18,7 +18,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.swing.text.html.Option;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -61,10 +63,15 @@ public class ParameterServiceImpl implements ParameterService {
 
 
     @Override
-    public boolean delete(Long parameterId) {
+    public boolean deleteById(Long parameterId) {
         Parameter parameter = parameterRepository.findById(parameterId)
                 .orElseThrow(()->new EntityNotFoundException("Parameter with id " + parameterId + " not found"));
-        parameterRepository.delete(parameter);
+        Optional<GamePattern> gamePatternOptional = gamePatternRepository.findByParametersContaining(parameter);
+        if (gamePatternOptional.isPresent()){
+            gamePatternOptional.get().getParameters().remove(parameter);
+            gamePatternRepository.save(gamePatternOptional.get());
+        }
+        parameterRepository.save(parameter);
         return true;
     }
 }

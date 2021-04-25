@@ -107,6 +107,8 @@ public class AnswerServiceImpl implements AnswerService {
     public boolean deleteById(Long answerId) {
         Answer answer = answerRepository.findById(answerId)
                 .orElseThrow(() -> new EntityNotFoundException("Answer with id " + answerId + " not found"));
+        List<AnswerParameter> parameters = answer.getParameters();
+        parameters.forEach(answerParameterRepository::delete);
         answerRepository.delete(answer);
         return true;
     }

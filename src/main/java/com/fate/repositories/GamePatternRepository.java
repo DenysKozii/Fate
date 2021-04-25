@@ -1,6 +1,7 @@
 package com.fate.repositories;
 
 import com.fate.entity.GamePattern;
+import com.fate.entity.Parameter;
 import com.fate.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,4 +20,6 @@ public interface GamePatternRepository extends JpaRepository<GamePattern, Long>,
     Optional<GamePattern> findById(Long id);
 
     Optional<GamePattern> findByTitle(String title);
+
+    Optional<GamePattern> findByParametersContaining(Parameter parameter);
 }

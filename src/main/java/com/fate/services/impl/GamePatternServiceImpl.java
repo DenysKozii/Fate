@@ -2,16 +2,20 @@ package com.fate.services.impl;
 
 import com.fate.dto.GamePatternDto;
 import com.fate.entity.GamePattern;
+import com.fate.entity.Parameter;
+import com.fate.entity.Question;
 import com.fate.entity.User;
 import com.fate.exception.EntityNotFoundException;
 import com.fate.mapper.GamePatternMapper;
 import com.fate.pagination.PageDto;
 import com.fate.pagination.PagesUtility;
 import com.fate.repositories.GamePatternRepository;
+import com.fate.repositories.ParameterRepository;
 import com.fate.repositories.QuestionRepository;
 import com.fate.repositories.UserRepository;
 import com.fate.services.AuthorizationService;
 import com.fate.services.GamePatternService;
+import com.fate.services.ParameterService;
 import com.fate.services.QuestionService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +35,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class GamePatternServiceImpl implements GamePatternService {
     private final GamePatternRepository gamePatternRepository;
+    private final ParameterService parameterService;
     private final QuestionService questionService;
     private final QuestionRepository questionRepository;
     private final UserRepository userRepository;
@@ -91,9 +96,12 @@ public class GamePatternServiceImpl implements GamePatternService {
     public boolean deleteById(Long gamePatternId) {
         GamePattern gamePattern = gamePatternRepository.findById(gamePatternId)
                 .orElseThrow(() -> new EntityNotFoundException("GamePattern with id " + gamePatternId + " not found"));
-
         questionRepository.findAllByGamePatternId(gamePatternId).forEach(o -> questionService.deleteById(o.getId()));
-        gamePattern.setUsers(new HashSet<>());
+        gamePattern.setUsers(null);
+        gamePattern.getParameters().stream()
+                .map(Parameter::getId)
+                .forEach(parameterService::deleteById);
+        gamePattern.setParameters(null);
         gamePatternRepository.delete(gamePattern);
         return true;
     }

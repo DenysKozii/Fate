@@ -30,6 +30,7 @@ public class QuestionServiceImpl implements QuestionService {
     private final QuestionRepository questionRepository;
     private final GamePatternRepository gamePatternRepository;
     private final AnswerRepository answerRepository;
+    private final AnswerParameterRepository answerParameterRepository;
     private final QuestionParameterRepository questionParameterRepository;
 
 
@@ -113,7 +114,11 @@ public class QuestionServiceImpl implements QuestionService {
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(() -> new EntityNotFoundException("Question with id " + questionId + " not found"));
         List<Answer> answers = answerRepository.findAllByQuestionId(questionId);
-        answers.forEach(answerRepository::delete);
+        answers.stream().peek(
+                answer-> answer.getParameters().forEach(answerParameterRepository::delete)
+        ).forEach(answerRepository::delete);
+        question.getQuestionParameters().forEach(questionParameterRepository::delete);
+        question.setGamePattern(null);
         questionRepository.delete(question);
         return true;
     }

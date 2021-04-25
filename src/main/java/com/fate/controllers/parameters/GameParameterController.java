@@ -6,8 +6,6 @@ import com.fate.services.ParameterService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/gameParameter")
@@ -17,7 +15,7 @@ public class GameParameterController {
 
     @DeleteMapping("/{parameterId}")
     public boolean deleteGamePatternParameter(@PathVariable Long parameterId) {
-        return parameterService.delete(parameterId);
+        return parameterService.deleteById(parameterId);
     }
 
     @PostMapping("/new")
