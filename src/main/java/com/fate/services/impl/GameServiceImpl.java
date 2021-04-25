@@ -55,6 +55,7 @@ public class GameServiceImpl implements GameService {
         game.setGameStatus(GameStatus.RUNNING);
         game.setGamePattern(gamePattern);
         createParameters(game, gamePattern);
+        gameRepository.save(game);
         game.setQuestionsPull(changeQuestions(game));
         game.setUser(user);
         gameRepository.save(game);
