@@ -10,10 +10,7 @@ import com.fate.mapper.QuestionMapper;
 import com.fate.pagination.PageDto;
 import com.fate.pagination.PagesUtility;
 import com.fate.repositories.*;
-import com.fate.services.AnswerService;
-import com.fate.services.AuthorizationService;
-import com.fate.services.GameParameterService;
-import com.fate.services.GameService;
+import com.fate.services.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -35,10 +32,10 @@ public class GameServiceImpl implements GameService {
     private final QuestionRepository questionRepository;
     private final ParameterRepository parameterRepository;
     private final GameParameterRepository gameParameterRepository;
+    private final GameParameterService gameParameterService;
     private final QuestionParameterRepository questionParameterRepository;
     private final UserRepository userRepository;
     private final AnswerService answerService;
-    private final GameParameterService gameParameterService;
     private final AnswerRepository answerRepository;
     private final AnswerParameterRepository answerParameterRepository;
     private final AuthorizationService authorizationService;
@@ -198,12 +195,31 @@ public class GameServiceImpl implements GameService {
         return gameOverConditionCheck(game);
     }
 
+    @Override
+    public boolean deleteById(Long gameId) {
+        Game game = gameRepository.findById(gameId)
+                .orElseThrow(() -> new EntityNotFoundException("Game with id " + gameId + " not found"));
+        game.getParameters().stream()
+                .map(GameParameter::getId)
+                .forEach(gameParameterService::deleteById);
+        game.setGamePattern(null);
+        game.setGameRequest(null);
+        game.setUser(null);
+        game.getQuestionsPull().stream()
+                .map(Question::getId)
+                .forEach(questionRepository::deleteById);
+        gameRepository.save(game);
+        gameRepository.delete(game);
+        return true;
+    }
+
     private GameDto gameOverConditionCheck(Game game){
         if(gameParameterRepository.findAllByGame(game).stream()
                 .anyMatch(o -> o.getValue() <= o.getParameter().getLowestValue())){
             game.setGameStatus(GameStatus.GAME_OVER);
-            gameRepository.save(game);
+            deleteById(game.getId());
         }
         return mapToDto(game);
     }
+
 }

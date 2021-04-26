@@ -1,9 +1,7 @@
 package com.fate.controllers.game;
 
 import com.fate.dto.GameDto;
-import com.fate.dto.GameRequestDto;
 import com.fate.pagination.PageDto;
-import com.fate.services.AnswerService;
 import com.fate.services.GameService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/game")
 public class GameController {
 
-    private final AnswerService answerService;
     private final GameService gameService;
 
     @PostMapping("/new/{gamePatternId}")

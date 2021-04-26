@@ -1,10 +1,7 @@
 package com.fate.services.impl;
 
 import com.fate.dto.GamePatternDto;
-import com.fate.entity.GamePattern;
-import com.fate.entity.Parameter;
-import com.fate.entity.Question;
-import com.fate.entity.User;
+import com.fate.entity.*;
 import com.fate.exception.EntityNotFoundException;
 import com.fate.mapper.GamePatternMapper;
 import com.fate.pagination.PageDto;
@@ -13,10 +10,7 @@ import com.fate.repositories.GamePatternRepository;
 import com.fate.repositories.ParameterRepository;
 import com.fate.repositories.QuestionRepository;
 import com.fate.repositories.UserRepository;
-import com.fate.services.AuthorizationService;
-import com.fate.services.GamePatternService;
-import com.fate.services.ParameterService;
-import com.fate.services.QuestionService;
+import com.fate.services.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -36,6 +30,7 @@ import java.util.stream.Collectors;
 public class GamePatternServiceImpl implements GamePatternService {
     private final GamePatternRepository gamePatternRepository;
     private final ParameterService parameterService;
+    private final GameService gameService;
     private final QuestionService questionService;
     private final QuestionRepository questionRepository;
     private final UserRepository userRepository;
@@ -102,6 +97,11 @@ public class GamePatternServiceImpl implements GamePatternService {
                 .map(Parameter::getId)
                 .forEach(parameterService::deleteById);
         gamePattern.setParameters(null);
+        gamePattern.getGames().stream()
+                .map(Game::getId)
+                .forEach(gameService::deleteById);
+        gamePattern.setGames(null);
+        gamePatternRepository.save(gamePattern);
         gamePatternRepository.delete(gamePattern);
         return true;
     }
