@@ -9,13 +9,14 @@ import java.io.IOException;
 import java.util.List;
 
 public interface QuestionService {
-    List<QuestionDto> getQuestionsByGamePatternId(Long gamePatternId, Long questionId);
 
     PageDto<QuestionDto> getQuestionsByGamePatternId(Long gamePatternId, int page, int pageSize);
 
-    List<QuestionDto> addRelativeQuestion(Long questionId, Long relativeId, Long gamePatternId);
+    PageDto<QuestionDto> addRelativeQuestion(Long questionId, Long relativeId, int page, int pageSize);
 
     boolean deleteById(Long questionId);
 
     QuestionDto createNewQuestion(Long gamePatternId, String title, String context, Integer weight, MultipartFile multipartFile) throws IOException;
+
+    PageDto<QuestionDto> getRelativeQuestions(Long questionId, int page, int pageSize);
 }

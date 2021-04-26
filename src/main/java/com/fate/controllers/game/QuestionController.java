@@ -20,10 +20,10 @@ public class QuestionController {
 
     @PostMapping("/new/{gamePatternId}")
     public QuestionDto newQuestionByGamePattern(@PathVariable Long gamePatternId,
-                                   @RequestParam String title,
-                                   @RequestParam String context,
-                                   @RequestParam Integer weight,
-                                   @RequestParam(value = "fileImage", required = false) MultipartFile multipartFile
+                                                @RequestParam String title,
+                                                @RequestParam String context,
+                                                @RequestParam Integer weight,
+                                                @RequestParam(value = "fileImage", required = false) MultipartFile multipartFile
     ) throws IOException {
         return questionService.createNewQuestion(gamePatternId,
                 title,
@@ -44,19 +44,18 @@ public class QuestionController {
         return questionService.deleteById(questionId);
     }
 
-//    @GetMapping("/relativeQuestions/{gamePatternId}/{questionId}")
-//    public String relativeQuestionsList(@PathVariable Long questionId, @PathVariable Long gamePatternId, @AuthenticationPrincipal User user, Model model) {
-//        List<QuestionDto> questions = questionService.getQuestionsByGamePatternId(gamePatternId,questionId);
-//        model.addAttribute("questions", questions);
-//        model.addAttribute("gamePatternId",gamePatternId);
-//        return "question/relativeQuestionsList";
-//    }
+    @GetMapping("/relativeQuestions/{questionId}")
+    public PageDto<QuestionDto> relativeQuestionsList(@PathVariable Long questionId,
+                                                      @RequestParam(defaultValue = "0", required = false) int page,
+                                                      @RequestParam(defaultValue = "10", required = false) int pageSize) {
+        return questionService.getRelativeQuestions(questionId, page, pageSize);
+    }
 
-//    @GetMapping("/addRelativeQuestion/{gamePatternId}/{questionId}/{relativeId}")
-//    public String addRelativeQuestion(@PathVariable Long questionId,@PathVariable Long relativeId, @PathVariable Long gamePatternId, @AuthenticationPrincipal User user, Model model) {
-//        List<QuestionDto> questions = questionService.addRelativeQuestion(questionId, relativeId,gamePatternId);
-//        model.addAttribute("questions", questions);
-//        model.addAttribute("gamePatternId",gamePatternId);
-//        return "question/relativeQuestionsList";
-//    }
+    @PostMapping("/addRelativeQuestion/{questionId}/{relativeId}")
+    public PageDto<QuestionDto> addRelativeQuestion(@PathVariable Long questionId,
+                                                 @PathVariable Long relativeId,
+                                                 @RequestParam(defaultValue = "0", required = false) int page,
+                                                 @RequestParam(defaultValue = "10", required = false) int pageSize) {
+        return questionService.addRelativeQuestion(questionId, relativeId, page, pageSize);
+    }
 }

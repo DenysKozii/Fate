@@ -8,7 +8,7 @@ import com.fate.pagination.PageDto;
 import com.fate.pagination.PagesUtility;
 import com.fate.repositories.*;
 import com.fate.services.QuestionService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @Transactional
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class QuestionServiceImpl implements QuestionService {
 
     private final QuestionRepository questionRepository;
@@ -33,20 +33,31 @@ public class QuestionServiceImpl implements QuestionService {
     private final AnswerParameterRepository answerParameterRepository;
     private final QuestionParameterRepository questionParameterRepository;
 
-
-    @Override
-    public List<QuestionDto> getQuestionsByGamePatternId(Long gamePatternId, Long questionId) {
-        List<Question> questions = questionRepository.findAllByGamePatternId(gamePatternId);
-        return questions.stream()
-                .filter(o -> !o.getId().equals(questionId))
-                .map(QuestionMapper.INSTANCE::mapToDto)
-                .collect(Collectors.toList());
-    }
-
     @Override
     public PageDto<QuestionDto> getQuestionsByGamePatternId(Long gamePatternId, int page, int pageSize) {
         Page<Question> result = questionRepository.findAllByGamePatternId(gamePatternId, PagesUtility.createPageableUnsorted(page, pageSize));
         return PageDto.of(result.getTotalElements(), page, mapToDto(result.getContent()));
+    }
+
+    @Override
+    public PageDto<QuestionDto> addRelativeQuestion(Long questionId, Long relativeId, int page, int pageSize) {
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow(() -> new EntityNotFoundException("Question with id " + questionId + " not found"));
+        Question relativeQuestion = questionRepository.findById(relativeId)
+                .orElseThrow(() -> new EntityNotFoundException("Question with id " + relativeId + " not found"));
+
+        question.getQuestionConditions().add(relativeQuestion);
+        questionRepository.save(question);
+
+        Set<Question> relativeQuestions = new HashSet<>(question.getQuestionConditions());
+        relativeQuestions.add(question);
+
+        Page<Question> questions = questionRepository.findAllByGamePatternId(question.getGamePattern().getId(), PagesUtility.createPageableUnsorted(page, pageSize));
+        List<Question> result = questions.getContent().stream()
+                .filter(o -> !relativeQuestions.contains(o))
+                .collect(Collectors.toList());
+
+        return PageDto.of(result.size(), page, mapToDto(result));
     }
 
     private List<QuestionDto> mapToDto(List<Question> questions) {
@@ -90,23 +101,12 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public List<QuestionDto> addRelativeQuestion(Long questionId, Long relativeId, Long gamePatternId) {
+    public PageDto<QuestionDto> getRelativeQuestions(Long questionId, int page, int pageSize) {
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(() -> new EntityNotFoundException("Question with id " + questionId + " not found"));
-        Question relativeQuestion = questionRepository.findById(relativeId)
-                .orElseThrow(() -> new EntityNotFoundException("Question with id " + relativeId + " not found"));
-        GamePattern gamePattern = gamePatternRepository.findById(gamePatternId)
-                .orElseThrow(() -> new EntityNotFoundException("GamePattern with id " + gamePatternId + " not found"));
-
-        question.getQuestionConditions().add(relativeQuestion);
-        questionRepository.save(question);
-
-        Set<Question> relativeQuestions = new HashSet<>(question.getQuestionConditions());
-        relativeQuestions.add(question);
-        return gamePattern.getQuestions().stream()
-                .filter(o -> !relativeQuestions.contains(o))
-                .map(QuestionMapper.INSTANCE::mapToDto)
-                .collect(Collectors.toList());
+        PageDto<QuestionDto> pageDto = getQuestionsByGamePatternId(question.getGamePattern().getId(), page, pageSize);
+        pageDto.getObjects().remove(question.getId().intValue());
+        return pageDto;
     }
 
     @Override
@@ -115,7 +115,7 @@ public class QuestionServiceImpl implements QuestionService {
                 .orElseThrow(() -> new EntityNotFoundException("Question with id " + questionId + " not found"));
         List<Answer> answers = answerRepository.findAllByQuestionId(questionId);
         answers.stream().peek(
-                answer-> answer.getParameters().forEach(answerParameterRepository::delete)
+                answer -> answer.getParameters().forEach(answerParameterRepository::delete)
         ).forEach(answerRepository::delete);
         question.getQuestionParameters().forEach(questionParameterRepository::delete);
         question.setGamePattern(null);
