@@ -87,6 +87,7 @@ public class GameServiceImpl implements GameService {
         for (Parameter parameter : parameters) {
             GameParameter gameParameter = new GameParameter();
             gameParameter.setParameter(parameter);
+            gameParameter.setVisible(parameter.getVisible());
             gameParameter.setTitle(parameter.getTitle());
             gameParameter.setValue(parameter.getDefaultValue());
             gameParameter.setGame(game);

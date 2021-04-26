@@ -22,9 +22,12 @@ public class Parameter extends BaseEntity {
 
     private Integer lowestValue;
 
+    private Boolean visible = false;
+
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_game_pattern")
     private GamePattern gamePattern;
+
 }

@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,7 +28,7 @@ public class QuestionController {
                 title,
                 context,
                 weight,
-                null);
+                multipartFile);
     }
 
     @GetMapping("/list/{gamePatternId}")
@@ -53,9 +52,9 @@ public class QuestionController {
 
     @PostMapping("/addRelativeQuestion/{questionId}/{relativeId}")
     public PageDto<QuestionDto> addRelativeQuestion(@PathVariable Long questionId,
-                                                 @PathVariable Long relativeId,
-                                                 @RequestParam(defaultValue = "0", required = false) int page,
-                                                 @RequestParam(defaultValue = "10", required = false) int pageSize) {
+                                                    @PathVariable Long relativeId,
+                                                    @RequestParam(defaultValue = "0", required = false) int page,
+                                                    @RequestParam(defaultValue = "10", required = false) int pageSize) {
         return questionService.addRelativeQuestion(questionId, relativeId, page, pageSize);
     }
 }

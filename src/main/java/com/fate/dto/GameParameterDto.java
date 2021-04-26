@@ -20,4 +20,6 @@ public class GameParameterDto extends BaseDto {
 
     private Integer value;
 
+    private Boolean visible = false;
+
 }

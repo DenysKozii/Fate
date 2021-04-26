@@ -52,6 +52,7 @@ public class ParameterServiceImpl implements ParameterService {
         GamePattern gamePattern = gamePatternRepository.findById(parameterDto.getGamePatternId())
                 .orElseThrow(()->new EntityNotFoundException("GamePattern with id " + parameterDto.getGamePatternId() + " not found"));
         Parameter parameter = new Parameter();
+        parameter.setVisible(parameterDto.getVisible());
         parameter.setTitle(parameterDto.getTitle());
         parameter.setDefaultValue(parameterDto.getDefaultValue());
         parameter.setLowestValue(parameterDto.getLowestValue());

@@ -26,4 +26,6 @@ public class ParameterDto extends BaseDto {
 
     private Long gamePatternId;
 
+    private Boolean visible = false;
+
 }
